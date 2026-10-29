@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { currentUser } from "./auth";
 import { applicationOrigin } from "./security-policy";
+import { errorDiagnostic } from "./error-diagnostic";
 export class HttpError extends Error {
   constructor(
     public status: number,
@@ -75,10 +76,7 @@ export function handleError(error: unknown) {
       { error: "That name already exists." },
       { status: 409 },
     );
-  console.error(
-    "Request failed:",
-    error instanceof Error ? error.name : "Unknown error",
-  );
+  console.error("Request failed:", errorDiagnostic(error));
   return NextResponse.json(
     {
       error:
