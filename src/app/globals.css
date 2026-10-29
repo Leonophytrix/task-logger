@@ -1,26 +1,207 @@
 @import "tailwindcss";
-
+@custom-variant dark (&:is(.dark *));
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f8fc;
+  --foreground: #202638;
+  --card: #fff;
+  --muted: #647086;
+  --border: #e5e9f1;
+  --primary: #5754db;
+  --soft: #efedff;
 }
-
+.dark {
+  --background: #10131c;
+  --foreground: #edf0f8;
+  --card: #191e2b;
+  --muted: #a2aec4;
+  --border: #30384c;
+  --primary: #aaa6ff;
+  --soft: #302d50;
+  color-scheme: dark;
+}
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-soft: var(--soft);
+  --font-sans: Arial, Helvetica, sans-serif;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+  border-color: var(--border);
 }
-
 body {
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+h1,
+h2,
+h3 {
+  overflow-wrap: anywhere;
+}
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+button,
+a {
+  touch-action: manipulation;
+}
+button {
+  cursor: pointer;
+}
+button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 3px;
+}
+input:not([type="checkbox"]):not([type="color"]),
+select,
+textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: var(--card);
+  color: var(--foreground);
+  font-size: 16px;
+}
+textarea {
+  resize: vertical;
+}
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+label > input,
+label > select,
+label > textarea {
+  margin-top: 7px;
+}
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--primary);
+}
+.panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 3px 12px #17234203;
+}
+.eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--soft);
+  color: var(--primary);
+}
+.priority-high,
+.priority-critical {
+  color: #b64039;
+  background: #fff0eb;
+}
+.priority-low {
+  color: #237453;
+  background: #e5f6ee;
+}
+.status-completed {
+  color: #237453;
+  background: #e5f6ee;
+}
+.status-pending,
+.status-on_hold {
+  color: #8c5d13;
+  background: #fff5d9;
+}
+.dark .priority-high,
+.dark .priority-critical {
+  color: #ffb4a9;
+  background: #492a30;
+}
+.dark .priority-low,
+.dark .status-completed {
+  color: #a3e4c7;
+  background: #213e35;
+}
+.dark .status-pending,
+.dark .status-on_hold {
+  color: #f5d78b;
+  background: #443b27;
+}
+.safe-bottom {
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+@media (prefers-reduced-motion: no-preference) {
+  button,
+  a {
+    transition:
+      background-color 0.15s,
+      color 0.15s,
+      box-shadow 0.15s;
+  }
+  .enter {
+    animation: enter 0.25s ease-out;
+  }
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+@media print {
+  .workspace-frame {
+    padding-left: 0 !important;
+  }
+  .panel {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+  .report-content {
+    color: #111;
+    background: #fff;
+  }
+  aside,
+  header,
+  nav,
+  button,
+  .no-print {
+    display: none !important;
+  }
+  main {
+    margin: 0 !important;
+  }
 }
