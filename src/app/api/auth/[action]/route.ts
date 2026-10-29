@@ -30,8 +30,8 @@ export async function POST(
       const now = new Date();
       const resetAt = new Date(Date.now() + 15 * 60 * 1000);
       for (const [key, limit] of [
-        [`account:${input.username}`, 8],
         [`ip:${ip}`, trustedHeader ? 60 : 200],
+        [`account:${input.username}`, 8],
       ] as const) {
         const [row] = await db()
           .insert(loginLimits)

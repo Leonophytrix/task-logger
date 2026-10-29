@@ -2,6 +2,7 @@ import "server-only";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { currentUser } from "./auth";
+import { applicationOrigin } from "./security-policy";
 export class HttpError extends Error {
   constructor(
     public status: number,
@@ -20,9 +21,16 @@ export async function apiUser(admin = false, allowPasswordChange = false) {
   return user;
 }
 export function sameOrigin(request: Request) {
-  if (!process.env.APP_URL)
-    throw new HttpError(503, "Set APP_URL before using the application.");
-  if (request.headers.get("origin") !== new URL(process.env.APP_URL).origin)
+  let origin: string;
+  try {
+    origin = applicationOrigin(process.env.APP_URL);
+  } catch {
+    throw new HttpError(
+      503,
+      "Set APP_URL to the correct application origin (HTTPS in production).",
+    );
+  }
+  if (request.headers.get("origin") !== origin)
     throw new HttpError(403, "Request origin was rejected.");
 }
 export async function body(request: Request) {

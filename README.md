@@ -189,8 +189,9 @@ Test passwords belong only to this disposable database.
   account deletion, and password changes revoke existing sessions. Expired sessions/limits
   are cleaned after successful logins. Periodic SQL cleanup can be added later.
 - Security headers deny framing, object embedding and camera/microphone access.
-  CSP allows inline scripts/styles required by the current Next.js/theme setup. A nonce-based
-  CSP and a full production security/performance audit are planned for Phase 4.
+  CSP uses a fresh script nonce on every page request, including the theme initializer.
+  Inline styles remain allowed for charts. Private pages and APIs disable response caching.
+  Production sessions use a Secure, HTTP-only `__Host-` cookie.
 - Activity stores text, timestamps, entry type and optional duration. Consider a retention policy as usage grows.
 
 ## Free-tier deployment preparation
@@ -206,7 +207,29 @@ and production databases and rotate leaked credentials immediately.
 `npm run build` then `npm start` starts production mode. HTTPS is required for Secure session
 cookies. `DB_POOL_MAX` defaults to 3, capped at 5; reduce to 1–2 if your connection budget requires it.
 The `pg` driver uses unnamed statements compatible with transaction poolers. No cron or storage bucket is required.
-Deployment has not been performed by this implementation.
+Live deployment still requires environment configuration and a login/CRUD smoke test.
+
+### Vercel setup
+
+In the imported project's **Settings → Environment Variables**, add these for **Production**:
+
+| Name | Value |
+| --- | --- |
+| `DATABASE_URL` | Supabase transaction pooler URI, with the database password substituted |
+| `APP_URL` | Your exact HTTPS site origin, without `/login` |
+| `AUTH_SECRET` | A private random secret of at least 32 characters |
+| `DATABASE_CA_CERT` | If needed, the full downloaded Supabase CA PEM, including BEGIN/END lines |
+| `DB_POOL_MAX` | `2` |
+
+Paste values without surrounding quotes. A certificate's local file path will not work on
+Vercel; paste its contents. Keep TLS verification enabled. Leave `TRUSTED_IP_HEADER`
+unset unless you have verified your proxy's header guarantees. Runtime deployment does
+not need `DATABASE_MIGRATION_URL` or local `NODE_EXTRA_CA_CERTS` paths.
+
+Redeploy after saving variables. If you use the database already initialized locally,
+reuse its existing admin account; do not bootstrap it again. Verify login, task creation,
+editing, persistence after refresh, and logout on the HTTPS site. Use a separate database
+for preview deployments; do not enable production credentials for untrusted branches.
 
 ## Backup and recovery
 

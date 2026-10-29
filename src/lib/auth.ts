@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 import { and, eq, gt } from "drizzle-orm";
 import { db } from "@/db";
 import { users, sessions } from "@/db/schema";
-export const cookieName =
-  process.env.NODE_ENV === "production" ? "__Host-taskflow" : "taskflow";
+import { sessionCookieName, sessionCookieOptions } from "./security-policy";
+export const cookieName = sessionCookieName();
 export function digest(value: string) {
   const secret = process.env.AUTH_SECRET;
   if (!secret || secret.length < 32)
@@ -54,13 +54,7 @@ export async function createSession(
       .insert(sessions)
       .values({ tokenHash: digest(token), userId, expiresAt: expires });
   });
-  (await cookies()).set(cookieName, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    expires,
-  });
+  (await cookies()).set(cookieName, token, sessionCookieOptions(expires));
 }
 export async function destroySession() {
   const jar = await cookies();
